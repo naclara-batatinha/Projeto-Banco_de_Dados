@@ -1,0 +1,63 @@
+-- Criação da tabela de Pacientes
+CREATE TABLE Pacientes (
+    paciente_id SERIAL PRIMARY KEY, 
+    nome VARCHAR(100) NOT NULL, 
+    data_nascimento DATE NOT NULL,
+    genero VARCHAR(10), 
+    endereco VARCHAR(150) 
+);
+
+-- Criação da tabela de Especialidades
+CREATE TABLE Especialidades (
+    especialidade_id SERIAL PRIMARY KEY,
+    nome VARCHAR(50) UNIQUE NOT NULL 
+);
+
+-- Criação da tabela de Médicos
+CREATE TABLE Medicos (
+    medico_id SERIAL PRIMARY KEY, 
+    nome VARCHAR(100) NOT NULL, 
+    especialidade_id INT REFERENCES Especialidades(especialidade_id),
+    crm VARCHAR(20) UNIQUE NOT NULL 
+);
+
+-- Criação da tabela de Consultas
+CREATE TABLE Consultas (
+    consulta_id SERIAL PRIMARY KEY, 
+    paciente_id INT REFERENCES Pacientes(paciente_id),
+    medico_id INT REFERENCES Medicos(medico_id), 
+    data_consulta DATE NOT NULL 
+);
+
+-- Criação da tabela de Internações
+CREATE TABLE Internacoes (
+    internacao_id SERIAL PRIMARY KEY, 
+    paciente_id INT REFERENCES Pacientes(paciente_id), 
+    data_internacao DATE NOT NULL, 
+    data_alta DATE, 
+    ala VARCHAR(50) 
+);
+
+-- Criação da tabela de Medicamentos
+CREATE TABLE Medicamentos (
+    medicamento_id SERIAL PRIMARY KEY, 
+    nome VARCHAR(100) UNIQUE NOT NULL,
+    descricao VARCHAR(255) 
+);
+
+-- Criação da tabela de Estoque de Medicamentos
+CREATE TABLE Estoque_Medicamentos (
+    estoque_id SERIAL PRIMARY KEY,
+    medicamento_id INT REFERENCES Medicamentos(medicamento_id), 
+    quantidade INT NOT NULL,
+    data_validade DATE NOT NULL 
+);
+
+-- Criação da tabela de Cirurgias
+CREATE TABLE Cirurgias (
+    cirurgia_id SERIAL PRIMARY KEY, 
+    paciente_id INT REFERENCES Pacientes(paciente_id), 
+    medico_id INT REFERENCES Medicos(medico_id),
+    data_cirurgia DATE NOT NULL, 
+    medicamento_id INT REFERENCES Medicamentos(medicamento_id) 
+);
