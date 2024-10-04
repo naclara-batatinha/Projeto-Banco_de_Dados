@@ -1,0 +1,39 @@
+-- 1. Quais pacientes realizaram consultas com médicos da especialidade 'Cardiologia' nos últimos 6 meses?
+SELECT p.nome AS paciente, m.nome AS medico, c.data_consulta
+FROM Pacientes p
+JOIN Consultas c ON p.paciente_id = c.paciente_id
+JOIN Medicos m ON c.medico_id = m.medico_id
+JOIN Especialidades e ON m.especialidade_id = e.especialidade_id
+WHERE e.nome = 'Cardiologia'
+AND c.data_consulta >= (CURRENT_DATE - INTERVAL '6 months');
+
+-- 2. Qual o estoque atual de medicamentos que possuem validade dentro dos próximos 30 dias?
+SELECT med.nome, est.quantidade, est.data_validade
+FROM Estoque_Medicamentos est
+JOIN Medicamentos med ON est.medicamento_id = med.medicamento_id
+WHERE est.data_validade <= (CURRENT_DATE + INTERVAL '30 days');
+
+-- 3. Quais médicos trabalharam mais de 40 horas nos últimos 30 dias, somando consultas e plantões?
+SELECT m.nome, COUNT(c.consulta_id) AS total_horas
+FROM Medicos m
+JOIN Consultas c ON m.medico_id = c.medico_id
+WHERE c.data_consulta >= (CURRENT_DATE - INTERVAL '30 days')
+GROUP BY m.nome
+HAVING COUNT(c.consulta_id) > 40;
+
+-- 4. Quantos pacientes foram internados por mais de 7 dias nos últimos 3 meses, e em quais alas do hospital?
+SELECT i.ala, COUNT(p.paciente_id) AS total_pacientes
+FROM Internacoes i
+JOIN Pacientes p ON i.paciente_id = p.paciente_id
+WHERE i.data_internacao >= (CURRENT_DATE - INTERVAL '3 months')
+AND (i.data_alta - i.data_internacao) > 7
+GROUP BY i.ala;
+
+-- 5. Qual foi o medicamento mais utilizado em cirurgias nos últimos 6 meses?
+SELECT med.nome, COUNT(cir.cirurgia_id) AS vezes_utilizado
+FROM Cirurgias cir
+JOIN Medicamentos med ON cir.medicamento_id = med.medicamento_id
+WHERE cir.data_cirurgia >= (CURRENT_DATE - INTERVAL '6 months')
+GROUP BY med.nome
+ORDER BY vezes_utilizado DESC
+LIMIT 1;
